@@ -1,0 +1,7 @@
+- name: Check if docker cli and buildx plugin are installed
+  tags: client,docker,docker-cli
+  ansible.builtin.dnf:
+    name:
+      - docker-ce-cli
+      - docker-buildx-plugin
+    state: present

@@ -1,0 +1,31 @@
+- name: Install dnf-plugins-core
+  tags: server,docker,builder,buildx
+  ansible.builtin.dnf:
+    name: dnf-plugins-core
+    state: latest
+    update_cache: true
+
+- name: Set up the repository
+  tags: server,docker,builder,buildx
+  # For Amazon Linux change repo from centos to fedora
+  ansible.builtin.command: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  args:
+    creates: /etc/yum.repos.d/docker-ce.repo
+
+- name: Install docker daemon
+  tags: server,docker,builder,buildx
+  ansible.builtin.dnf:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: latest
+
+- name: Start docker daemon
+  tags: server,docker,builder,buildx
+  ansible.builtin.systemd_service:
+    name: docker
+    state: started
+    enabled: true
