@@ -1,7 +1,10 @@
+- name: Gather the package facts
+  tags: localhost,client,docker,docker-cli
+  ansible.builtin.package_facts:
+    manager: auto
+
 - name: Check if docker cli and buildx plugin are installed
-  tags: client,docker,docker-cli
-  ansible.builtin.dnf:
-    name:
-      - docker-ce-cli
-      - docker-buildx-plugin
-    state: present
+  tags: localhost,client,docker,docker-cli
+  ansible.builtin.debug:
+    msg: "docker cli and buildx plugin are installed"
+  failed_when: "'docker-ce-cli' and 'docker-buildx-plugin' not in ansible_facts.packages"

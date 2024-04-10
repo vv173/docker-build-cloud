@@ -4,7 +4,8 @@
   roles:
     - builder
 
-# - hosts: localhost
-#   become: true
-#   roles:
-#     - client
+- hosts: localhost
+  gather_facts: false
+  become: false
+  roles:
+    - client
