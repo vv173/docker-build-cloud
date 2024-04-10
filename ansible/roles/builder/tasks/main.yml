@@ -5,23 +5,18 @@
     state: latest
     update_cache: true
 
-- name: Set up the repository
-  tags: server,docker,builder,buildx
-  # For Amazon Linux change repo from centos to fedora
-  ansible.builtin.command: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  args:
-    creates: /etc/yum.repos.d/docker-ce.repo
-
 - name: Install docker daemon
   tags: server,docker,builder,buildx
   ansible.builtin.dnf:
-    name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      - docker-buildx-plugin
-      - docker-compose-plugin
+    name: docker
     state: latest
+
+- name: Add user to the docker group
+  tags: server,docker,builder,buildx
+  ansible.builtin.user:
+    name: ec2-user
+    groups: docker
+    append: true
 
 - name: Start docker daemon
   tags: server,docker,builder,buildx

@@ -1,0 +1,10 @@
+---
+- hosts: docker_build_instances
+  become: true
+  roles:
+    - builder
+
+# - hosts: localhost
+#   become: true
+#   roles:
+#     - client
