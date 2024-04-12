@@ -28,10 +28,13 @@
     enabled: true
 
 - name: Generate TLS certificates
-  tags: server,docker,builder,buildx,ssl,tls
-  ansible.builtin.command: SAN="{{ inventory_hostname }} {{ ansible_host }}" docker buildx bake "https://github.com/moby/buildkit.git#master:examples/create-certs"
+  ansible.builtin.shell:
+    cmd: docker buildx bake "https://github.com/moby/buildkit.git#master:examples/create-certs"
+  environment:
+    SAN: "{{ inventory_hostname }} {{ ansible_host }}"
   args:
     creates: ./.certs
+    executable: /bin/bash
 
 - name: Copy TLS certificates to the ansible controller
   tags: server,docker,builder,buildx
@@ -43,3 +46,28 @@
     - ca.pem
     - cert.pem
     - key.pem
+
+- name: Install qemu emulator binaries
+  tags: server,docker,builder,buildx
+  community.docker.docker_container:
+    name: binfmt
+    image: tonistiigi/binfmt:latest
+    privileged: true
+    auto_remove: true
+    command: --install all
+
+- name: Start containerized BuildKit daemon
+  tags: server,docker,builder,buildx
+  community.docker.docker_container:
+    name: buildkitd
+    image: moby/buildkit:latest
+    privileged: true
+    ports:
+      - "1537:1537"
+    volumes:
+      - ./.certs:/etc/buildkit/certs
+    command: >
+      --addr tcp://0.0.0.0:1537
+      --tlscacert /etc/buildkit/certs/daemon/ca.pem
+      --tlscert /etc/buildkit/certs/daemon/cert.pem
+      --tlskey /etc/buildkit/certs/daemon/key.pem
