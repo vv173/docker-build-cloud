@@ -215,4 +215,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# TLS certificates
+.certs
+
 # End of https://www.toptal.com/developers/gitignore/api/terraform,ansible,python

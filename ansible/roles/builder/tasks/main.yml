@@ -1,7 +1,9 @@
 - name: Install dnf-plugins-core
   tags: server,docker,builder,buildx
   ansible.builtin.dnf:
-    name: dnf-plugins-core
+    name:
+      - dnf-plugins-core
+      - git
     state: latest
     update_cache: true
 
@@ -24,3 +26,20 @@
     name: docker
     state: started
     enabled: true
+
+- name: Generate TLS certificates
+  tags: server,docker,builder,buildx,ssl,tls
+  ansible.builtin.command: SAN="{{ inventory_hostname }} {{ ansible_host }}" docker buildx bake "https://github.com/moby/buildkit.git#master:examples/create-certs"
+  args:
+    creates: ./.certs
+
+- name: Copy TLS certificates to the ansible controller
+  tags: server,docker,builder,buildx
+  ansible.builtin.fetch:
+    src: "/home/ec2-user/.certs/client/{{ item }}"
+    dest: ./.certs/client/
+    flat: true
+  loop:
+    - ca.pem
+    - cert.pem
+    - key.pem
