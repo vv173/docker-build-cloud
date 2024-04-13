@@ -24,29 +24,23 @@ Additionally, you will need:
   export AWS_SECRET_ACCESS_KEY="your_secret_access_key"
   ```
 
-<!-- ## Installation
+## Usage
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/yourusername/remote-buildkit.git
    cd remote-buildkit
    ```
 
-2. **Initialize Terraform:**
+2. **Deploy remote buildkit instance:**
    ```bash
-   terraform init
+   ./deploy_builder.sh {name}
    ```
 
-3. **Deploy the Infrastructure:**
+3. **Remove remote buildkit instance:**
    ```bash
-   terraform apply
+   ./remove_builder.sh {name}
    ```
 
-4. **Run Ansible Playbook:**
-   ```bash
-   ansible-playbook setup.yml
-   ``` -->
-
-## Usage
 After deployment, the remote BuildKit instance will be connected to your local machine. To verify the connection and see your BuildKit instance listed among available builders, use:
 ```bash
 docker buildx ls
